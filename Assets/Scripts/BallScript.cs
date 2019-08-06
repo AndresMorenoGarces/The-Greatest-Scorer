@@ -28,8 +28,10 @@ public class BallScript : MonoBehaviour
     {
         if (colission.transform.tag == "Wall")
         {
+            dir *= -1;
             GameManager.instance.UpdateScore();
+            GameManager.instance.ChangeSpikePosition();
+
         }
-        dir *= -1;
     }
 }

@@ -9,10 +9,11 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     public GameObject ball;
-    public Text restartText;
+    public Transform[] spikes;
+    int spikeQuantity;
     public Button buttonRestart;
-    public Text Counter;
-    int score = 0;
+    public Text counter;
+    int score = 1;
 
 
     public void RestartGame()
@@ -22,30 +23,40 @@ public class GameManager : MonoBehaviour
 
     public void UpdateScore()
     {
-        Counter.text = "" + score;
+        counter.text = "" + score;
         score++;
 
+    }
+
+    public void ChangeSpikePosition()
+    {
+        spikeQuantity =  Random.Range(spikes.GetLength(0), spikes.Length);
+        spikes[spikeQuantity].gameObject.SetActive(true);
     }
 
     void Awake()
     {
         if (instance == null)
         {
-            
+            instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
         }
     }
 
     void Start()
     {
         buttonRestart.gameObject.SetActive(false);
-
+        
     }
 
     void Update()
     {
         if (ball == null)
         {
-            restartText.text = "Órale We, Perdiste Puto!!!";
+            counter.text = "You Lose";
             buttonRestart.gameObject.SetActive(true);
         }
     }
