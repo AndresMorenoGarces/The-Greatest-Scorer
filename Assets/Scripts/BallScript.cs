@@ -17,7 +17,8 @@ public class BallScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            rB.AddForce(Vector2.up * 400);
+            rB.AddForce(transform.up * 200);
+            rB.velocity = new Vector2(0, 0);
 
         }
         rB.velocity = new Vector2(1 * dir, rB.velocity.y);
@@ -26,11 +27,18 @@ public class BallScript : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D colission)
     {
-        if (colission.transform.tag == "Wall")
+        if (colission.transform.tag == "Left Wall")
         {
             dir *= -1;
             GameManager.instance.UpdateScore();
-            GameManager.instance.ChangeSpikePosition();
+            GameManager.instance.ChangeSpikePosition(true);
+
+        }
+        else if (colission.transform.tag == "Right Wall")
+        {
+            dir *= -1;
+            GameManager.instance.UpdateScore();
+            GameManager.instance.ChangeSpikePosition(false);
 
         }
     }
