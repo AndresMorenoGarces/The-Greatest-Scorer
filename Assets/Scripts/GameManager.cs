@@ -8,21 +8,53 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+
     public GameObject ball;
+
     public Transform[] LeftSpikes;
     public Transform[] RightSpikes;
-    int randomSpike = 0;
-    [SerializeField]
-    float adittionForScore = 0;
-    public Button buttonRestart;
-    public Text counter;
+
     int score = 1;
+    int randomSpike = 0;
 
+    float adittionForScore = 0;
 
+    public Button buttonBegin;
+    public Button buttonRestart;
+
+    public Text beginText;
+    public Text restartText;
+
+    public Text title;
+    public Text credits;
+    public Text counter;
+
+    public Image counterImage;
+
+    public void BeginGame()
+    {
+        ball.SetActive(true);
+        buttonBegin.gameObject.SetActive(false);
+        title.gameObject.SetActive(false);
+        credits.gameObject.SetActive(false);
+        counter.gameObject.SetActive(true);
+        counterImage.gameObject.SetActive(true);
+    }
+
+    void LoseGame()
+    {
+        if (ball == null)
+        {
+            counter.text = "You Lose";
+            restartText.text = "RESTART";
+            buttonRestart.gameObject.SetActive(true);
+        }
+    }
 
     public void RestartGame()
     {
         SceneManager.LoadScene("SampleScene");
+        beginText.text = "PLAY";
     }
 
     public void UpdateScore()
@@ -68,6 +100,11 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        title.text = "The \n Greatest \n Scorer";
+        credits.text = "Developer \n Andrés F. Moreno";
+
+        ball.SetActive(false);
+
         if (instance == null)
         {
             instance = this;
@@ -80,17 +117,16 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        counter.gameObject.SetActive(false);
+        counterImage.gameObject.SetActive(false);
+        buttonBegin.gameObject.SetActive(true);
         buttonRestart.gameObject.SetActive(false);
-        
+
     }
 
     void Update()
     {
-        if (ball == null)
-        {
-            counter.text = "You Lose";
-            buttonRestart.gameObject.SetActive(true);
-        }
+        LoseGame();
     }
     
 }
