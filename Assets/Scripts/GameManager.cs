@@ -17,7 +17,10 @@ public class GameManager : MonoBehaviour
     int score = 1;
     int randomSpike = 0;
 
-    float adittionForScore = 0;
+    [HideInInspector]
+    public int colorInt = 5;
+
+    public float adittionForScore = 0;
 
     public Button buttonBegin;
     public Button buttonRestart;
@@ -30,6 +33,8 @@ public class GameManager : MonoBehaviour
     public Text counter;
 
     public Image counterImage;
+
+    public Color[] colorList = new Color[5];
 
     public void BeginGame()
     {
@@ -54,7 +59,7 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         SceneManager.LoadScene("SampleScene");
-        beginText.text = "PLAY";
+        beginText.text = "START";
     }
 
     public void UpdateScore()
@@ -76,6 +81,7 @@ public class GameManager : MonoBehaviour
                 }
                 randomSpike = Random.Range(0, LeftSpikes.Length - 1);
                 RightSpikes[randomSpike].gameObject.SetActive(true);
+                RandomSpikeColor(RightSpikes[randomSpike].gameObject);
             }
         }
         else if (leftWall == false)
@@ -88,20 +94,52 @@ public class GameManager : MonoBehaviour
                 }
                 randomSpike = Random.Range(0, RightSpikes.Length - 1);
                 LeftSpikes[randomSpike].gameObject.SetActive(true);
+                RandomSpikeColor(LeftSpikes[randomSpike].gameObject);
             }
-            
+
         }
 
-        if (score == score%10 && adittionForScore < 3)
+        
+
+        if (score % 5 == 0)
         {
-            adittionForScore++;       
+            if (score % 10 == 0 && adittionForScore < 4)
+            {
+                adittionForScore++;
+            }
+
+            colorInt = Random.Range(0, 5);           
+        }
+
+        void RandomSpikeColor(GameObject _spike)
+        {
+            switch (colorInt)
+            {
+                case 0:
+                    _spike.GetComponent<SpriteRenderer>().color = colorList[0];
+                    break;
+                case 1:
+                    _spike.GetComponent<SpriteRenderer>().color = colorList[1];
+                    break;
+                case 2:
+                    _spike.GetComponent<SpriteRenderer>().color = colorList[2];
+                    break;
+                case 3:
+                    _spike.GetComponent<SpriteRenderer>().color = colorList[3];
+                    break;
+                case 4:
+                    _spike.GetComponent<SpriteRenderer>().color = colorList[4];
+                    break;
+            }
         }
     }
 
+    
+
     void Awake()
     {
-        title.text = "The \n Greatest \n Scorer";
-        credits.text = "Developer \n Andrés F. Moreno";
+        title.text = " The \n Greatest \nScorer";
+        credits.text = "Developer \n Andrés F. Moreno Garcés";
 
         ball.SetActive(false);
 
