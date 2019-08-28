@@ -9,5 +9,7 @@ public class SpikeScript : MonoBehaviour
     void OnCollisionEnter2D(Collision2D colission)
     {
         Destroy(ball);
+        GameManager.instance.SaveTemporalScore();
+        GameManager.instance.SaveBestScore();
     }
 }

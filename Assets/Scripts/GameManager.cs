@@ -10,17 +10,21 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     public GameObject ball;
+    public GameObject quad;
 
     public Transform[] LeftSpikes;
     public Transform[] RightSpikes;
 
-    int score = 1;
+    int score = 0;
     int randomSpike = 0;
+    int bestScore;
+    int lastScore;
 
     [HideInInspector]
-    public int colorInt = 5;
+    public int colorInt = 0;
+    int ballNumber = 0;
 
-    public float adittionForScore = 0;
+    float adittionForScore = 0;
 
     public Button buttonBegin;
     public Button buttonRestart;
@@ -32,9 +36,34 @@ public class GameManager : MonoBehaviour
     public Text credits;
     public Text counter;
 
+    public Text lastScoreText;
+    public Text bestScoreText;
+
     public Image counterImage;
 
-    public Color[] colorList = new Color[5];
+    public Color[] colorList;
+
+    public Sprite[] ballSprites;
+
+    public AudioClip ballSound;
+
+
+    public void FunctionsActivator()
+    {
+        if (score % 5 == 0)
+        {
+            ChanceQuadMaterial();
+
+            if (score % 10 == 0)
+            {
+                ChanceBallSprite();
+                if (adittionForScore <= 6)
+                {
+                    adittionForScore++;
+                }
+            }
+        }
+    }
 
     public void BeginGame()
     {
@@ -64,82 +93,104 @@ public class GameManager : MonoBehaviour
 
     public void UpdateScore()
     {
-        counter.text = "" + score;
+        counter.text = "" + (score + 1);
         score++;
 
+    }
+
+    public void SaveTemporalScore()
+    {      
+        lastScore = score;
+        lastScoreText.text = "Last Score:\n" + PlayerPrefs.GetInt("Last_Score");
+        PlayerPrefs.SetInt("Last_Score", lastScore);
+    }
+
+    public void SaveBestScore()
+    {
+        if (score > PlayerPrefs.GetInt("Best_Score"))
+        {
+            bestScore = score;
+            Debug.Log("Score" + (score));
+            Debug.Log(bestScore);
+            PlayerPrefs.SetInt("Best_Score", bestScore);
+        }
+        bestScoreText.text = "Best Score:\n" + PlayerPrefs.GetInt("Best_Score");
+    }
+
+    void LoadScore()
+    {
+       lastScoreText.text = "Last Score:\n" + PlayerPrefs.GetInt("Last_Score");
+       bestScoreText.text = "Best Score:\n" + PlayerPrefs.GetInt("Best_Score");
     }
 
     public void ChangeSpikePosition(bool leftWall)
     {
         if (leftWall == true)
         {
-            for (int i = 0; i < Random.Range(1 + adittionForScore, LeftSpikes.Length -2); i++)
+            for (int i = 0; i < Random.Range(1 + adittionForScore, RightSpikes.Length - 6 + adittionForScore); i++)
             {
-                for (int j = 0; j < RightSpikes.Length; j++)
+                for (int j = 0; j < LeftSpikes.Length; j++)
                 {
                     LeftSpikes[j].gameObject.SetActive(false);
                 }
-                randomSpike = Random.Range(0, LeftSpikes.Length - 1);
+                randomSpike = Random.Range(0, RightSpikes.Length);
                 RightSpikes[randomSpike].gameObject.SetActive(true);
-                RandomSpikeColor(RightSpikes[randomSpike].gameObject);
+                SpikesColor(RightSpikes[randomSpike].gameObject);
             }
         }
         else if (leftWall == false)
         {
-            for (int i = 0; i < Random.Range(1 + adittionForScore, LeftSpikes.Length -2); i++)
+            for (int i = 0; i < Random.Range(1 + adittionForScore, LeftSpikes.Length -6 + adittionForScore); i++)
             {
-                for (int j = 0; j < LeftSpikes.Length; j++)
+                for (int j = 0; j < RightSpikes.Length; j++)
                 {
                     RightSpikes[j].gameObject.SetActive(false);
                 }
-                randomSpike = Random.Range(0, RightSpikes.Length - 1);
+                randomSpike = Random.Range(0, LeftSpikes.Length);
                 LeftSpikes[randomSpike].gameObject.SetActive(true);
-                RandomSpikeColor(LeftSpikes[randomSpike].gameObject);
+                SpikesColor(LeftSpikes[randomSpike].gameObject);
             }
+        }    
+    }
 
-        }
-
-        
-
-        if (score % 5 == 0)
+    void SpikesColor(GameObject _spike)
+    {
+        if (colorInt < colorList.Length - 1)
         {
-            if (score % 10 == 0 && adittionForScore < 4)
-            {
-                adittionForScore++;
-            }
-
-            colorInt = Random.Range(0, 5);           
-        }
-
-        void RandomSpikeColor(GameObject _spike)
-        {
-            switch (colorInt)
-            {
-                case 0:
-                    _spike.GetComponent<SpriteRenderer>().color = colorList[0];
-                    break;
-                case 1:
-                    _spike.GetComponent<SpriteRenderer>().color = colorList[1];
-                    break;
-                case 2:
-                    _spike.GetComponent<SpriteRenderer>().color = colorList[2];
-                    break;
-                case 3:
-                    _spike.GetComponent<SpriteRenderer>().color = colorList[3];
-                    break;
-                case 4:
-                    _spike.GetComponent<SpriteRenderer>().color = colorList[4];
-                    break;
-            }
+            _spike.GetComponent<Renderer>().material.color = colorList[(colorInt+1)];
         }
     }
 
-    
+    void ChanceBallSprite()
+    {
+        if (ballNumber < ballSprites.Length - 1)
+        {
+            ballNumber++;
+            ball.GetComponent<SpriteRenderer>().sprite = ballSprites[ballNumber];
+        }
+        else 
+        {
+            ballNumber = 0;
+        }
+    }
 
+    void ChanceQuadMaterial()
+    {
+        if (colorInt < colorList.Length - 1)
+        {
+            colorInt++;
+            quad.GetComponent<MeshRenderer>().material.color = colorList[colorInt];
+        }
+    }
+
+    public void BallSound()
+    {
+        gameObject.GetComponent<AudioSource>().PlayOneShot(ballSound);
+    }
     void Awake()
     {
         title.text = " The \n Greatest \nScorer";
-        credits.text = "Developer \n Andrés F. Moreno Garcés";
+        credits.text = "Developer \nAndrés F. Moreno Garcés";
 
         ball.SetActive(false);
 
@@ -155,11 +206,11 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        LoadScore();
         counter.gameObject.SetActive(false);
         counterImage.gameObject.SetActive(false);
         buttonBegin.gameObject.SetActive(true);
         buttonRestart.gameObject.SetActive(false);
-
     }
 
     void Update()

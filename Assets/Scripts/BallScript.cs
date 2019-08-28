@@ -19,6 +19,7 @@ public class BallScript : MonoBehaviour
         {
             ballRigidBody.AddForce(transform.up * 200);
             ballRigidBody.velocity = new Vector2(0, 0);
+            GameManager.instance.BallSound();
 
         }
         ballRigidBody.velocity = new Vector2(1.5f * dir, ballRigidBody.velocity.y);
@@ -32,14 +33,14 @@ public class BallScript : MonoBehaviour
             dir *= -1;
             GameManager.instance.UpdateScore();
             GameManager.instance.ChangeSpikePosition(true);
-
-
+            GameManager.instance.FunctionsActivator();
         }
         else if (colission.transform.tag == "Right Wall")
         {
             dir *= -1;
             GameManager.instance.UpdateScore();
             GameManager.instance.ChangeSpikePosition(false);
+            GameManager.instance.FunctionsActivator();
         }
     }
 }
