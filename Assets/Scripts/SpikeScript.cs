@@ -11,5 +11,6 @@ public class SpikeScript : MonoBehaviour
         Destroy(ball);
         GameManager.instance.SaveTemporalScore();
         GameManager.instance.SaveBestScore();
+        GameManager.instance.LoseHitSound();
     }
 }

@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject ball;
     public GameObject quad;
+    public GameObject musicContainer;
 
     public Transform[] LeftSpikes;
     public Transform[] RightSpikes;
@@ -25,6 +26,7 @@ public class GameManager : MonoBehaviour
     int ballNumber = 0;
 
     float adittionForScore = 0;
+    float gameVelocity = 0.05f;
 
     public Button buttonBegin;
     public Button buttonRestart;
@@ -47,26 +49,43 @@ public class GameManager : MonoBehaviour
 
     public AudioClip ballSound;
 
+    public AudioClip wallSound;  
+
+    public AudioClip loseSound;
+
+    public AudioClip firstSong;
+
+    public AudioClip secondSong;
+
+    AudioSource audioSource;
+    
+
+    bool active;
+
 
     public void FunctionsActivator()
     {
         if (score % 5 == 0)
         {
             ChanceQuadMaterial();
-
+            if (gameVelocity <= 1f)
+            {
+                Time.timeScale += gameVelocity;
+            }
             if (score % 10 == 0)
             {
                 ChanceBallSprite();
                 if (adittionForScore <= 6)
                 {
-                    adittionForScore++;
+                    adittionForScore++;    
                 }
             }
-        }
+        } 
     }
 
     public void BeginGame()
     {
+        Time.timeScale = 1f;
         ball.SetActive(true);
         buttonBegin.gameObject.SetActive(false);
         title.gameObject.SetActive(false);
@@ -83,6 +102,12 @@ public class GameManager : MonoBehaviour
             restartText.text = "RESTART";
             buttonRestart.gameObject.SetActive(true);
         }
+    }
+
+    public void PauseMode()
+    {
+            active = !active;
+            Time.timeScale = (active) ? 0 : 1;
     }
 
     public void RestartGame()
@@ -157,7 +182,7 @@ public class GameManager : MonoBehaviour
     {
         if (colorInt < colorList.Length - 1)
         {
-            _spike.GetComponent<Renderer>().material.color = colorList[(colorInt+1)];
+            _spike.GetComponent<Renderer>().material.color = colorList[(colorInt + 1)];
         }
     }
 
@@ -187,11 +212,40 @@ public class GameManager : MonoBehaviour
     {
         gameObject.GetComponent<AudioSource>().PlayOneShot(ballSound);
     }
+
+    public void WallHitSound()
+    {
+        gameObject.GetComponent<AudioSource>().PlayOneShot(wallSound);
+    }
+    public void LoseHitSound()
+    {
+        gameObject.GetComponent<AudioSource>().PlayOneShot(loseSound);
+    }
+
+    public void SongsChange()
+    {
+        if (audioSource.isPlaying == false)
+        {
+            audioSource.clip = firstSong;
+            audioSource.Play();
+            //if (audioSource.isPlaying == false)
+            //{
+            //    audioSource.clip = secondSong;
+            //    audioSource.Play();
+            //}
+        }
+
+        //if (firstSong != musicContainer.GetComponent<AudioSource>().isPlaying)
+        //{
+        //    musicContainer.GetComponent<AudioSource>().clip = secondSong;
+        //}
+    }
+
     void Awake()
     {
         title.text = " The \n Greatest \nScorer";
         credits.text = "Developer \nAndrés F. Moreno Garcés";
-
+        audioSource = musicContainer.GetComponent<AudioSource>();
         ball.SetActive(false);
 
         if (instance == null)
@@ -215,6 +269,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        SongsChange();
         LoseGame();
     }
     

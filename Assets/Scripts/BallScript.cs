@@ -34,6 +34,7 @@ public class BallScript : MonoBehaviour
             GameManager.instance.UpdateScore();
             GameManager.instance.ChangeSpikePosition(true);
             GameManager.instance.FunctionsActivator();
+            GameManager.instance.WallHitSound();
         }
         else if (colission.transform.tag == "Right Wall")
         {
@@ -41,6 +42,7 @@ public class BallScript : MonoBehaviour
             GameManager.instance.UpdateScore();
             GameManager.instance.ChangeSpikePosition(false);
             GameManager.instance.FunctionsActivator();
+            GameManager.instance.WallHitSound();
         }
     }
 }
