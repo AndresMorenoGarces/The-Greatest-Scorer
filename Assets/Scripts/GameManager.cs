@@ -26,10 +26,11 @@ public class GameManager : MonoBehaviour
     int ballNumber = 0;
 
     float adittionForScore = 0;
-    float gameVelocity = 0.05f;
+    float gameVelocity = 0.075f;
 
     public Button buttonBegin;
     public Button buttonRestart;
+    //public Button buttonPause;
 
     public Text beginText;
     public Text restartText;
@@ -75,7 +76,7 @@ public class GameManager : MonoBehaviour
             if (score % 10 == 0)
             {
                 ChanceBallSprite();
-                if (adittionForScore <= 6)
+                if (adittionForScore < 6)
                 {
                     adittionForScore++;    
                 }
@@ -92,6 +93,7 @@ public class GameManager : MonoBehaviour
         credits.gameObject.SetActive(false);
         counter.gameObject.SetActive(true);
         counterImage.gameObject.SetActive(true);
+        //buttonPause.gameObject.SetActive(true);
     }
 
     void LoseGame()
@@ -104,11 +106,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void PauseMode()
-    {
-            active = !active;
-            Time.timeScale = (active) ? 0 : 1;
-    }
+    //public void PauseMode()
+    //{
+    //        active = !active;
+    //        Time.timeScale = (active) ? 0 : 1;
+    //}
 
     public void RestartGame()
     {
@@ -217,6 +219,7 @@ public class GameManager : MonoBehaviour
     {
         gameObject.GetComponent<AudioSource>().PlayOneShot(wallSound);
     }
+
     public void LoseHitSound()
     {
         gameObject.GetComponent<AudioSource>().PlayOneShot(loseSound);
@@ -228,17 +231,7 @@ public class GameManager : MonoBehaviour
         {
             audioSource.clip = firstSong;
             audioSource.Play();
-            //if (audioSource.isPlaying == false)
-            //{
-            //    audioSource.clip = secondSong;
-            //    audioSource.Play();
-            //}
         }
-
-        //if (firstSong != musicContainer.GetComponent<AudioSource>().isPlaying)
-        //{
-        //    musicContainer.GetComponent<AudioSource>().clip = secondSong;
-        //}
     }
 
     void Awake()
@@ -247,6 +240,8 @@ public class GameManager : MonoBehaviour
         credits.text = "Developer \nAndrés F. Moreno Garcés";
         audioSource = musicContainer.GetComponent<AudioSource>();
         ball.SetActive(false);
+        //buttonPause.gameObject.SetActive(false);
+
 
         if (instance == null)
         {
