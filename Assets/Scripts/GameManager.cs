@@ -31,22 +31,23 @@ public class GameManager : MonoBehaviour
     float currentTimeScale = 1;
     float numberParticles = 0;
 
-    public Button buttonBegin;
     public Button buttonRestart;
     public Button buttonPause;
     public Button exitButton;
     public Button instructionButton;
 
+    public GameObject gameInterface;
+    public GameObject pauseInterface;
+    public GameObject menuInterface;
+
     public Text beginText;
     public Text restartText;
-    public Text title;
-    public Text credits;
     public Text counter;
     public Text instructionText;
     public Text lastScoreText;
     public Text bestScoreText;
 
-    public Canvas pauseCanvas;
+    public Transform buttonPauseTransform;
     public Image counterImage;
 
     public Color[] colorList;
@@ -93,15 +94,8 @@ public class GameManager : MonoBehaviour
     public void BeginGame()
     {
         Time.timeScale = 1f;
-        ball.SetActive(true);
-        buttonBegin.gameObject.SetActive(false);
-        title.gameObject.SetActive(false);
-        credits.gameObject.SetActive(false);
-        counter.gameObject.SetActive(true);
-        counterImage.gameObject.SetActive(true);
-        buttonPause.gameObject.SetActive(true);
-        instructionButton.gameObject.SetActive(false);
-        buttonPause.gameObject.SetActive(true);
+        menuInterface.SetActive(false);
+        gameInterface.SetActive(true);
     }
 
     void LoseGame()
@@ -166,7 +160,7 @@ public class GameManager : MonoBehaviour
         active = !active;
 
         Time.timeScale = (active) ? 0 : currentTimeScale;
-        pauseCanvas.gameObject.SetActive(active);
+        buttonPauseTransform.gameObject.SetActive(active);
     }
 
     public void RestartGame()
@@ -178,21 +172,14 @@ public class GameManager : MonoBehaviour
     public void Instructions()
     {
         instructionText.gameObject.SetActive(true);
-        instructionButton.gameObject.SetActive(false);
         exitButton.gameObject.SetActive(true);
-        title.gameObject.SetActive(false);
-        buttonBegin.gameObject.SetActive(false);
-        lastScoreText.gameObject.SetActive(false);
-        bestScoreText.gameObject.SetActive(false);
-        credits.gameObject.SetActive(false);
-
+        menuInterface.SetActive(false);
     }
 
     public void UpdateScore()
     {
         counter.text = "" + (score + 1);
         score++;
-
     }
 
     public void SaveTemporalScore()
@@ -207,8 +194,6 @@ public class GameManager : MonoBehaviour
         if (score > PlayerPrefs.GetInt("Best_Score"))
         {
             bestScore = score;
-            Debug.Log("Score" + (score));
-            Debug.Log(bestScore);
             PlayerPrefs.SetInt("Best_Score", bestScore);
         }
         bestScoreText.text = "Best Score:\n" + PlayerPrefs.GetInt("Best_Score");
@@ -324,8 +309,6 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        title.text = " The \n Greatest \nScorer";
-        credits.text = "Developer \nAndrés F. Moreno Garcés";
         audioSource = musicContainer.GetComponent<AudioSource>();
         ball.SetActive(false);
         emissionModule = particleSystemBall.emission;
@@ -343,12 +326,14 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        LoadScore();
+        menuInterface.SetActive(true);
         counter.gameObject.SetActive(false);
-        counterImage.gameObject.SetActive(false);
-        buttonBegin.gameObject.SetActive(true);
+        gameInterface.SetActive(false);
+        exitButton.gameObject.SetActive(false);
         buttonRestart.gameObject.SetActive(false);
+        LoadScore();
     }
+
 
     void Update()
     {
