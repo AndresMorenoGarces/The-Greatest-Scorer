@@ -15,13 +15,15 @@ public class BallScript : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && Time.timeScale != 0)
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            ballRigidBody.AddForce(new Vector2(0, 200));
+            ballRigidBody.AddForce(transform.up * 200);
             ballRigidBody.velocity = new Vector2(0, 0);
             GameManager.instance.BallSound();
+
         }
-        ballRigidBody.velocity = new Vector2(1.5f * dir, ballRigidBody.velocity.y);        
+        ballRigidBody.velocity = new Vector2(1.5f * dir, ballRigidBody.velocity.y);
+        
     }
 
     void OnCollisionEnter2D(Collision2D colission)
