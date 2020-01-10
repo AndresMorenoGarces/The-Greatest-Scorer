@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
     public Button buttonRestart;
     //public Button buttonPause;
+<<<<<<< HEAD
 
     public GameObject gameInterface;
     public GameObject pauseInterface;
@@ -39,6 +40,11 @@ public class GameManager : MonoBehaviour
     public Text restartText;
 <<<<<<< HEAD
 =======
+=======
+
+    public Text beginText;
+    public Text restartText;
+>>>>>>> parent of 2d2ea7e... Update
 
     public Text title;
     public Text credits;
@@ -49,7 +55,10 @@ public class GameManager : MonoBehaviour
     public Text bestScoreText;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public Transform buttonPauseTransform;
+=======
+>>>>>>> parent of 2d2ea7e... Update
 =======
 >>>>>>> parent of 2d2ea7e... Update
     public Image counterImage;
@@ -108,6 +117,9 @@ public class GameManager : MonoBehaviour
         counter.gameObject.SetActive(true);
         counterImage.gameObject.SetActive(true);
         //buttonPause.gameObject.SetActive(true);
+<<<<<<< HEAD
+>>>>>>> parent of 2d2ea7e... Update
+=======
 >>>>>>> parent of 2d2ea7e... Update
     }
 
@@ -122,6 +134,7 @@ public class GameManager : MonoBehaviour
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void PauseMode()
     {
         active = !active;
@@ -130,11 +143,16 @@ public class GameManager : MonoBehaviour
         buttonPauseTransform.gameObject.SetActive(active);
     }
 =======
+=======
+>>>>>>> parent of 2d2ea7e... Update
     //public void PauseMode()
     //{
     //        active = !active;
     //        Time.timeScale = (active) ? 0 : 1;
     //}
+<<<<<<< HEAD
+>>>>>>> parent of 2d2ea7e... Update
+=======
 >>>>>>> parent of 2d2ea7e... Update
 
     public void RestartGame()
@@ -144,6 +162,7 @@ public class GameManager : MonoBehaviour
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void Instructions()
     {
         instructionText.gameObject.SetActive(true);
@@ -151,6 +170,8 @@ public class GameManager : MonoBehaviour
         menuInterface.SetActive(false);
     }
 
+=======
+>>>>>>> parent of 2d2ea7e... Update
 =======
 >>>>>>> parent of 2d2ea7e... Update
     public void UpdateScore()
