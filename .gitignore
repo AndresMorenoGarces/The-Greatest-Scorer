@@ -35,7 +35,3 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
-Assets/Scenes/SampleScene.unity
-Assets/Scripts/GameManager.cs
-Assets/Sprites/Materials/Ball4.mat
-Assets/Sprites/Materials/Ball4.mat.meta
