@@ -16,7 +16,15 @@ public class GameManager : MonoBehaviour
     public Transform[] LeftSpikes;
     public Transform[] RightSpikes;
     public Transform[] up_DownSpikes;
+    public Transform leftSpikesHide;
+    public Transform leftSpikesShow;
+    Transform leftSpikesDual;
+    public Transform rightSpikesHide;
+    public Transform rightSpikesShow;
+    Transform rightSpikesDual;
     public Transform particlesTransform;
+    public GameObject rightSpikesToMove;
+    public GameObject leftSpikesToMove;
 
     int score = 0;
     int randomSpike = 0;
@@ -25,9 +33,13 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector]
     public int colorInt = 0;
+
     int particlesColorInt = -1;
     int ballNumber = 0;
-
+    float randomRightSpikesInt;
+    float randomLeftSpikesInt;
+    float constantRandomRightSpikesInt;
+    float constantRandomLeftSpikesInt;
     float adittionForScore = 0;
     float gameVelocity = 0.075f;
     float currentTimeScale = 1;
@@ -65,6 +77,9 @@ public class GameManager : MonoBehaviour
     AudioSource audioSource;
 
     bool loadFirstSong = false;
+    bool active = false;
+    bool isLeftSpikeMoving = false;
+    bool isRightSpikeMoving = false;
 
     public ParticleSystem particleSystemBall;
     ParticleSystem.EmissionModule emissionModule;
@@ -110,25 +125,25 @@ public class GameManager : MonoBehaviour
     {
         if (ball == null)
         {
-            if (score > 10 && score <= 20)
+            if (score >= 10 && score < 20)
                 counter.text = "Good \n" + score;
-            else if (score > 20 && score <= 30)
+            else if (score >= 20 && score < 30)
                 counter.text = "Cool \n" + score;
-            else if (score > 30 && score <= 40)
+            else if (score >= 30 && score < 40)
                 counter.text = "Amazing \n" + score;
-            else if (score > 40 && score <= 50)
+            else if (score >= 40 && score < 50)
                 counter.text = "Boss \n" + score;
-            else if (score > 50 && score <= 60)
+            else if (score >= 50 && score < 60)
                 counter.text = "Titan \n" + score;
-            else if (score > 60 && score <= 70)
+            else if (score >= 60 && score < 70)
                 counter.text = "Unreal \n" + score;
-            else if (score > 70 && score <= 80)
-                counter.text = "Real.Pro \n" + score;
-            else if (score > 80 && score <= 90)
+            else if (score >= 70 && score < 80)
+                counter.text = "Real Pro \n" + score;
+            else if (score >= 80 && score < 90)
                 counter.text = "Wizard \n" + score;
-            else if (score > 90 && score <= 100)
-                counter.text = "The.Best \n" + score;
-            else if (score > 100 && score < 200)
+            else if (score >= 90 && score < 100)
+                counter.text = "The Best \n" + score;
+            else if (score >= 100 && score < 200)
                 counter.text = "Legend \n" + score;
             else if (score >= 200)
                 counter.text = "God \n" + score;
@@ -140,10 +155,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void PauseMode(bool active)
+    public void PauseMode()
     {
         active = !active;
 
+        counter.gameObject.GetComponent<TextMeshPro>().sortingOrder = (active) ? -1 : 0;
         Time.timeScale = (active) ? 0 : currentTimeScale;
         pauseObject.SetActive(active);
     }
@@ -209,26 +225,73 @@ public class GameManager : MonoBehaviour
     {
         if (leftWall == true)
         {
-            for (int i = 0; i < Random.Range(0 + adittionForScore, RightSpikes.Length - 5 + adittionForScore); i++)
+            randomRightSpikesInt = constantRandomRightSpikesInt;
+
+            for (int i = 0; i < randomRightSpikesInt; i++)
             {
                 for (int j = 0; j < LeftSpikes.Length; j++)
-                    LeftSpikes[j].gameObject.SetActive(false);
+                    LeftSpikes[j].SetParent(leftSpikesToMove.transform);
                 randomSpike = Random.Range(0, RightSpikes.Length);
-                RightSpikes[randomSpike].gameObject.SetActive(true);
+                RightSpikes[randomSpike].SetParent(rightSpikesToMove.transform);
                 SpikesColor(RightSpikes[randomSpike].gameObject);
+            }
+
+            isRightSpikeMoving = true;
+            isLeftSpikeMoving = false;
+
+            if (leftSpikesToMove.transform.position != new Vector3(leftSpikesHide.position.x, leftSpikesToMove.transform.position.y, leftSpikesToMove.transform.position.z))
+            {
+                leftSpikesToMove.transform.position = Vector3.MoveTowards(leftSpikesToMove.transform.position,
+                    new Vector3(leftSpikesHide.position.x, leftSpikesToMove.transform.position.y, leftSpikesToMove.transform.position.z), 1);
+            }
+
+            for (int i = 0; i < LeftSpikes.Length; i++)
+            {
+                LeftSpikes[i].transform.SetParent(null);
+                LeftSpikes[i].transform.position = new Vector3(leftSpikesHide.position.x, LeftSpikes[i].transform.position.y, LeftSpikes[i].transform.position.z);
             }
         }
         else if (leftWall == false)
         {
-            for (int i = 0; i < Random.Range(1 + adittionForScore, LeftSpikes.Length - 5 + adittionForScore); i++)
+            randomLeftSpikesInt = constantRandomLeftSpikesInt;
+
+            for (int i = 0; i < randomLeftSpikesInt; i++)
             {
                 for (int j = 0; j < RightSpikes.Length; j++)
-                    RightSpikes[j].gameObject.SetActive(false);
+                    RightSpikes[j].SetParent(rightSpikesToMove.transform);
                 randomSpike = Random.Range(0, LeftSpikes.Length);
-                LeftSpikes[randomSpike].gameObject.SetActive(true);
+                LeftSpikes[randomSpike].SetParent(leftSpikesToMove.transform);
                 SpikesColor(LeftSpikes[randomSpike].gameObject);
             }
+
+            isLeftSpikeMoving = true;
+            isRightSpikeMoving = false;
+
+            if (rightSpikesToMove.transform.position != new Vector3(rightSpikesHide.position.x, rightSpikesToMove.transform.position.y, rightSpikesToMove.transform.position.z))
+            {
+                rightSpikesToMove.transform.position = Vector3.MoveTowards(rightSpikesToMove.transform.position,
+                    new Vector3(rightSpikesHide.position.x, rightSpikesToMove.transform.position.y, rightSpikesToMove.transform.position.z), 1);
+            }
+
+            for (int i = 0; i < RightSpikes.Length; i++)
+            {
+                RightSpikes[i].transform.SetParent(null);
+                RightSpikes[i].transform.position = new Vector3(rightSpikesHide.position.x, RightSpikes[i].transform.position.y, RightSpikes[i].transform.position.z);
+
+            }
         }
+    }
+
+    void MovingSpikes()
+    {
+        leftSpikesDual = (isLeftSpikeMoving) ? leftSpikesShow : leftSpikesHide;
+        rightSpikesDual = (isRightSpikeMoving) ? rightSpikesShow : rightSpikesHide;
+
+        rightSpikesToMove.transform.position = Vector3.MoveTowards(rightSpikesToMove.transform.position,
+            new Vector3(rightSpikesDual.position.x, rightSpikesToMove.transform.position.y, rightSpikesToMove.transform.position.z), 1f * Time.deltaTime);
+
+        leftSpikesToMove.transform.position = Vector3.MoveTowards(leftSpikesToMove.transform.position,
+            new Vector3(leftSpikesDual.position.x, leftSpikesToMove.transform.position.y, leftSpikesToMove.transform.position.z), 1f * Time.deltaTime);
     }
 
     void SpikesColor(GameObject _spike)
@@ -236,7 +299,7 @@ public class GameManager : MonoBehaviour
         if (colorInt >= colorList.Length)
             colorInt = 0;
         else
-            _spike.GetComponent<Renderer>().material.color = colorList[(colorInt + 1)];
+            _spike.GetComponent<Renderer>().material.color = colorList[(colorInt)];
     }
 
     void ChanceBallSprite()
@@ -268,7 +331,7 @@ public class GameManager : MonoBehaviour
         if (colorInt < colorList.Length - 1)
         {
             colorInt++;
-            quad.GetComponent<MeshRenderer>().material.color = colorList[colorInt];
+            quad.GetComponent<SpriteRenderer>().material.color = colorList[colorInt];
         }
     }
 
@@ -326,6 +389,10 @@ public class GameManager : MonoBehaviour
     {
         SongsChange();
         LoseGame();
+        constantRandomRightSpikesInt = Random.Range(0 + adittionForScore, RightSpikes.Length - 5 + adittionForScore);
+        constantRandomLeftSpikesInt = Random.Range(0 + adittionForScore, LeftSpikes.Length - 5 + adittionForScore);
+
+        MovingSpikes();
     }
     
 }
