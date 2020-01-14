@@ -3,24 +3,7 @@
 public class BallScript : MonoBehaviour
 {
     Rigidbody2D ballRigidBody;
-    public int dir = 1;
-    
-
-    void Start()
-    {
-        ballRigidBody = GetComponent<Rigidbody2D>();
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Mouse0) && Time.timeScale != 0)
-        {
-            ballRigidBody.AddForce(new Vector2(0, 200));
-            ballRigidBody.velocity = new Vector2(0, 0);
-            GameManager.instance.BallSound();
-        }
-        ballRigidBody.velocity = new Vector2(1.5f * dir, ballRigidBody.velocity.y);        
-    }
+    int dir = 1;
 
     void OnCollisionEnter2D(Collision2D colission)
     {
@@ -40,5 +23,19 @@ public class BallScript : MonoBehaviour
             GameManager.instance.FunctionsActivator();
             GameManager.instance.WallHitSound();
         }
+    }
+    void Start()
+    {
+        ballRigidBody = GetComponent<Rigidbody2D>();
+    }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0) && Time.timeScale != 0)
+        {
+            ballRigidBody.AddForce(new Vector2(0, 200));
+            ballRigidBody.velocity = new Vector2(0, 0);
+            GameManager.instance.BallSound();
+        }
+        ballRigidBody.velocity = new Vector2(1.5f * dir, ballRigidBody.velocity.y);        
     }
 }

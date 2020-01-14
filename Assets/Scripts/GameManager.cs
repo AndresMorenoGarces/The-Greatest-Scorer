@@ -1,40 +1,79 @@
-﻿using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-
+    [Header("GameObjects")]
     public GameObject ball;
     public GameObject quad;
     public GameObject musicContainer;
+    public GameObject menuInterface;
+    public GameObject instructionsInterface;
+    public GameObject gameInterface;
+    public GameObject pauseInterface;
+    public GameObject exitInterface;
 
+    [Header("Transforms")]
+    public Transform particlesTransform;
     public Transform spikes;
+    public Transform leftSpikesHide;
+    public Transform leftSpikesShow;
+    public Transform rightSpikesHide;
+    public Transform rightSpikesShow;
+    public GameObject rightSpikesToMove;
+    public GameObject leftSpikesToMove;
+
+    [Header("Buttons")]
+    public Button buttonRestart;
+    public Button buttonPause;
+    public Button backButton;
+    public Button ExitButton;
+
+    [Header("TextMeshPro")]
+    public TextMeshPro beginText;
+    public TextMeshPro counter;
+    public TextMeshPro lastScoreText;
+    public TextMeshPro bestScoreText;
+
+    [Header("AudioClip")]
+    public AudioClip ballSound;
+    public AudioClip wallSound;
+    public AudioClip loseSound;
+    public AudioClip firstSong;
+    public AudioClip secondSong;
+
+    [Header("ParticleSystem")]
+    public ParticleSystem particleSystemBall;
+
+    [Header("Transform Arrays")]
+
+    [Header("Arrays")]
     public Transform[] LeftSpikes;
     public Transform[] RightSpikes;
     public Transform[] up_DownSpikes;
-    public Transform leftSpikesHide;
-    public Transform leftSpikesShow;
-    Transform leftSpikesDual;
-    public Transform rightSpikesHide;
-    public Transform rightSpikesShow;
-    Transform rightSpikesDual;
-    public Transform particlesTransform;
-    public GameObject rightSpikesToMove;
-    public GameObject leftSpikesToMove;
+    [Header("Sprite Arrays")]
+    public Sprite[] ballSprites;
+    [Header("GameObject Arrays")]
     public GameObject[] lockAdornsBallon;
+    [Header("Color Arrays")]
+    public Color[] colorList;
+    public Color[] colorSpikeList;
+    [Header("Gradient Arrays")]
+    public Gradient[] colorParticlesList;
+
+    [HideInInspector]
+    public int ballNumber = 0;
     int score = 0;
-    int randomSpike = 0;
     int bestScore;
     int lastScore;
-
     int colorInt = 0;
+    int randomSpike = 0;
     int colorIntSpikes = 0;
-
     int particlesColorInt = -1;
-    int ballNumber = 0;
+
     float randomRightSpikesInt;
     float randomLeftSpikesInt;
     float constantRandomRightSpikesInt;
@@ -44,38 +83,8 @@ public class GameManager : MonoBehaviour
     float currentTimeScale = 1;
     float numberParticles = 0;
 
-    public Button buttonBegin;
-    public Button buttonRestart;
-    public Button buttonPause;
-    public Button backButton;
-    public Button ExitButton;
-    public Button instructionButton;
-
-    public TextMeshPro beginText;
-    public TextMeshPro restartText;
-    public TextMeshPro title;
-    public TextMeshPro credits;
-    public TextMeshPro tapText;
-    public TextMeshPro counter;
-    public TextMeshPro instructionText;
-    public TextMeshPro lastScoreText;
-    public TextMeshPro bestScoreText;
-
-    public GameObject pauseObject;
-    public Image counterImage;
-
-    public Color[] colorList;
-    public Color[] colorSpikeList;
-    public Gradient[] colorParticlesList;
-
-    public Sprite[] ballSprites;
-    public AudioClip ballSound;
-    public AudioClip wallSound;
-    public AudioClip loseSound;
-    public AudioClip firstSong;
-    public AudioClip secondSong;
-
-    AudioSource audioSource;
+    Transform leftSpikesDual;
+    Transform rightSpikesDual;
 
     bool loadFirstSong = false;
     bool active = false;
@@ -83,12 +92,54 @@ public class GameManager : MonoBehaviour
     bool isRightSpikeMoving = false;
     bool inGame = false;
 
-    public ParticleSystem particleSystemBall;
+    AudioSource audioSource;
+
     ParticleSystem.EmissionModule emissionModule;
     ParticleSystem.ColorOverLifetimeModule colorOverLifetimeModule;
 
+    
+    public void Instructions()
+    {
+        instructionsInterface.gameObject.SetActive(true);
+        menuInterface.gameObject.SetActive(false);
+    }
+    public void Back()
+    {
+        menuInterface.gameObject.SetActive(true);
+        instructionsInterface.gameObject.SetActive(false);
+    }
+    public void BeginGame()
+    {
+        ChanceBallSprite();
+        UpgradeParticlesBall();
+        Time.timeScale = 1.15f;
+        for (int i = 0; i < up_DownSpikes.Length; i++)
+            up_DownSpikes[i].gameObject.SetActive(true);
+        menuInterface.gameObject.SetActive(false);
+        gameInterface.gameObject.SetActive(true);
+        ball.SetActive(true);
+        buttonPause.gameObject.SetActive(true);
+        ExitButton.gameObject.SetActive(false);
+        inGame = true;
+    }
+    public void HardcoreGame()
+    {
+        ChanceBallSprite();
+        UpgradeParticlesBall();
+        Time.timeScale = 2.15f;
+        adittionForScore = 4;
+        for (int i = 0; i < up_DownSpikes.Length; i++)
+            up_DownSpikes[i].gameObject.SetActive(true);
+        menuInterface.gameObject.SetActive(false);
+        gameInterface.gameObject.SetActive(true);
+        ball.SetActive(true);
+        buttonPause.gameObject.SetActive(true);
+        ExitButton.gameObject.SetActive(false);
+        inGame = true;
+    }
     public void FunctionsActivator()
     {
+       
         if (score % 5 == 0)
         {
             ChanceQuadMaterial();
@@ -102,30 +153,129 @@ public class GameManager : MonoBehaviour
                 ChanceBallSprite();
                 UpgradeParticlesBall();
                 SpikesColor();
-                if (adittionForScore < 6)
+                if (adittionForScore < 5)
                     adittionForScore++;
             }
         }
     }
-
-    public void BeginGame()
+    public void ChangeSpikePosition(bool leftWall)
     {
-        Time.timeScale = 1.15f;
-        ball.SetActive(true);
-        for (int i = 0; i < up_DownSpikes.Length; i++)
-            up_DownSpikes[i].gameObject.SetActive(true);
-        buttonBegin.gameObject.SetActive(false);
-        ExitButton.gameObject.SetActive(false);
-        title.gameObject.SetActive(false);
-        credits.gameObject.SetActive(false);
-        tapText.gameObject.SetActive(true);
-        counter.gameObject.SetActive(true);
-        counterImage.gameObject.SetActive(true);
-        buttonPause.gameObject.SetActive(true);
-        instructionButton.gameObject.SetActive(false);
-        inGame = true;
-    }
+        if (leftWall == true)
+        {
+            randomRightSpikesInt = constantRandomRightSpikesInt;
 
+            for (int i = 0; i < randomRightSpikesInt; i++)
+            {
+                for (int j = 0; j < leftSpikesHide.childCount; j++)
+                    LeftSpikes[j].SetParent(leftSpikesToMove.transform);
+
+                randomSpike = Random.Range(0, RightSpikes.Length);
+                RightSpikes[randomSpike].SetParent(rightSpikesToMove.transform);
+            }
+            isRightSpikeMoving = true;
+            isLeftSpikeMoving = false;
+        }
+        else if (leftWall == false)
+        {
+            randomLeftSpikesInt = constantRandomLeftSpikesInt;
+
+            for (int i = 0; i < randomLeftSpikesInt; i++)
+            {
+                for (int j = 0; j < rightSpikesHide.childCount; j++)
+                    RightSpikes[j].SetParent(rightSpikesToMove.transform);
+                randomSpike = Random.Range(0, LeftSpikes.Length);
+                LeftSpikes[randomSpike].SetParent(leftSpikesToMove.transform);
+            }
+            isLeftSpikeMoving = true;
+            isRightSpikeMoving = false;
+        }
+    }
+    void MovingSpikes()
+    {
+        leftSpikesDual = (isLeftSpikeMoving) ? leftSpikesShow : leftSpikesHide;
+        rightSpikesDual = (isRightSpikeMoving) ? rightSpikesShow : rightSpikesHide;
+
+        if (leftSpikesToMove.transform.position == new Vector3(leftSpikesHide.position.x, leftSpikesToMove.transform.position.y, leftSpikesToMove.transform.position.z) && isLeftSpikeMoving == false)
+        {
+            for (int i = 0; i < LeftSpikes.Length; i++)
+                LeftSpikes[i].transform.SetParent(spikes);
+        }
+        if (rightSpikesToMove.transform.position == new Vector3(rightSpikesHide.position.x, rightSpikesToMove.transform.position.y, rightSpikesToMove.transform.position.z) && isRightSpikeMoving == false)
+        {
+            for (int i = 0; i < RightSpikes.Length; i++)
+                RightSpikes[i].transform.SetParent(spikes);
+        }
+
+        rightSpikesToMove.transform.position = Vector3.MoveTowards(rightSpikesToMove.transform.position,
+            new Vector3(rightSpikesDual.position.x, rightSpikesToMove.transform.position.y, rightSpikesToMove.transform.position.z), 1.5f * Time.deltaTime);
+
+        leftSpikesToMove.transform.position = Vector3.MoveTowards(leftSpikesToMove.transform.position,
+            new Vector3(leftSpikesDual.position.x, leftSpikesToMove.transform.position.y, leftSpikesToMove.transform.position.z), 1.5f * Time.deltaTime);
+    }
+    void SpikesColor()
+    {
+        if (colorIntSpikes < colorSpikeList.Length)
+        {
+            for (int i = 0; i < up_DownSpikes.Length; i++)
+                up_DownSpikes[i].GetComponent<SpriteRenderer>().color = colorSpikeList[(colorIntSpikes)];
+            for (int j = 0; j < LeftSpikes.Length; j++)
+                LeftSpikes[j].GetComponent<SpriteRenderer>().color = colorSpikeList[(colorIntSpikes)];
+            for (int l = 0; l < RightSpikes.Length; l++)
+                RightSpikes[l].GetComponent<SpriteRenderer>().color = colorSpikeList[(colorIntSpikes)];
+            colorIntSpikes++;
+        }
+        else
+            colorIntSpikes = 0;
+    }
+    void ChanceBallSprite()
+    {
+        if (score >= (ballNumber + 1) * 10)
+        {
+            if (ballNumber < ballSprites.Length)
+            {
+                if (score > 0)
+                    ballNumber++;
+            }
+            else
+                ballNumber = ballSprites.Length;
+        }
+        ball.GetComponent<SpriteRenderer>().sprite = ballSprites[ballNumber];
+    }
+    void UpgradeParticlesBall()
+    {
+        particlesColorInt = ballNumber;
+
+        if (numberParticles <= 100)
+            numberParticles = 10 * ballNumber;
+        emissionModule.rateOverTime = numberParticles;
+        colorOverLifetimeModule.color = colorParticlesList[particlesColorInt];
+
+        if (particlesColorInt == colorParticlesList.Length)
+            particlesColorInt = 0;
+    }
+    void ChanceQuadMaterial()
+    {
+        if (colorInt < colorList.Length - 1)
+        {
+            colorInt++;
+            quad.GetComponent<SpriteRenderer>().material.color = colorList[colorInt];
+        }
+        else
+            colorInt = 0;
+    }
+    public void UpdateScore()
+    {
+        counter.text = "" + (score + 1);
+        score++;
+    }
+    public void PauseMode()
+    {
+        active = !active;
+
+        counter.gameObject.GetComponent<TextMeshPro>().sortingOrder = (active) ? -1 : 0;
+        Time.timeScale = (active) ? 0 : currentTimeScale;
+        pauseInterface.SetActive(active);
+    }
     void LoseGame()
     {
         if (ball == null)
@@ -160,62 +310,17 @@ public class GameManager : MonoBehaviour
             buttonPause.gameObject.SetActive(false);
         }
     }
-
-    public void PauseMode()
-    {
-        active = !active;
-
-        counter.gameObject.GetComponent<TextMeshPro>().sortingOrder = (active) ? -1 : 0;
-        Time.timeScale = (active) ? 0 : currentTimeScale;
-        pauseObject.SetActive(active);
-    }
-
     public void RestartGame()
     {
-        SceneManager.LoadScene("SampleScene");
         inGame = false;
+        SceneManager.LoadScene("SampleScene");
     }
-
-    public void Instructions()
-    {
-        instructionText.gameObject.SetActive(true);
-        instructionButton.gameObject.SetActive(false);
-        backButton.gameObject.SetActive(true);
-        title.gameObject.SetActive(false);
-        buttonBegin.gameObject.SetActive(false);
-        lastScoreText.gameObject.SetActive(false);
-        bestScoreText.gameObject.SetActive(false);
-        credits.gameObject.SetActive(false);
-    }
-    public void Back()
-    {
-        instructionText.gameObject.SetActive(false);
-        instructionButton.gameObject.SetActive(true);
-        backButton.gameObject.SetActive(false);
-        title.gameObject.SetActive(true);
-        buttonBegin.gameObject.SetActive(true);
-        lastScoreText.gameObject.SetActive(true);
-        bestScoreText.gameObject.SetActive(true);
-        credits.gameObject.SetActive(true);
-    }
-    public void ExitGame()
-    {
-        Application.Quit();
-    }
-
-    public void UpdateScore()
-    {
-        counter.text = "" + (score + 1);
-        score++;
-    }
-
     public void SaveTemporalScore()
     {
         lastScore = score;
         lastScoreText.text = "Last Score:\n" + PlayerPrefs.GetInt("Last_Score");
         PlayerPrefs.SetInt("Last_Score", lastScore);
     }
-
     public void SaveBestScore()
     {
         if (score > PlayerPrefs.GetInt("Best_Score"))
@@ -231,132 +336,33 @@ public class GameManager : MonoBehaviour
         lastScoreText.text = "Last Score:\n" + PlayerPrefs.GetInt("Last_Score");
         bestScoreText.text = "Best Score:\n" + PlayerPrefs.GetInt("Best_Score");
     }
-
-    public void ChangeSpikePosition(bool leftWall)
+    public void ExitGame()
     {
-        if (leftWall == true)
-        {
-            randomRightSpikesInt = constantRandomRightSpikesInt;
-
-            for (int i = 0; i < randomRightSpikesInt; i++)
-            {
-                for (int j = 0; j < leftSpikesHide.childCount; j++)
-                    LeftSpikes[j].SetParent(leftSpikesToMove.transform);
-
-                randomSpike = Random.Range(0, RightSpikes.Length);
-                RightSpikes[randomSpike].SetParent(rightSpikesToMove.transform);
-            }
-
-            isRightSpikeMoving = true;
-            isLeftSpikeMoving = false;
-
-           
-        }
-        else if (leftWall == false)
-        {
-            randomLeftSpikesInt = constantRandomLeftSpikesInt;
-
-            for (int i = 0; i < randomLeftSpikesInt; i++)
-            {
-                for (int j = 0; j < rightSpikesHide.childCount; j++)
-                    RightSpikes[j].SetParent(rightSpikesToMove.transform);
-                randomSpike = Random.Range(0, LeftSpikes.Length);
-                LeftSpikes[randomSpike].SetParent(leftSpikesToMove.transform);
-            }
-            isLeftSpikeMoving = true;
-            isRightSpikeMoving = false;
-        }
+        Application.Quit();
     }
-
-    void MovingSpikes()
+    public void CancelExitGame()
     {
-        leftSpikesDual = (isLeftSpikeMoving) ? leftSpikesShow : leftSpikesHide;
-        rightSpikesDual = (isRightSpikeMoving) ? rightSpikesShow : rightSpikesHide;
-
-        if (leftSpikesToMove.transform.position == new Vector3(leftSpikesHide.position.x, leftSpikesToMove.transform.position.y, leftSpikesToMove.transform.position.z) && isLeftSpikeMoving == false)
-        {
-            for (int i = 0; i < LeftSpikes.Length; i++)
-                LeftSpikes[i].transform.SetParent(spikes);
-        }
-        if (rightSpikesToMove.transform.position == new Vector3(rightSpikesHide.position.x, rightSpikesToMove.transform.position.y, rightSpikesToMove.transform.position.z) && isRightSpikeMoving == false)
-        {
-            for (int i = 0; i < RightSpikes.Length; i++)
-                RightSpikes[i].transform.SetParent(spikes);
-        }
-
-        rightSpikesToMove.transform.position = Vector3.MoveTowards(rightSpikesToMove.transform.position,
-            new Vector3(rightSpikesDual.position.x, rightSpikesToMove.transform.position.y, rightSpikesToMove.transform.position.z), 1.5f * Time.deltaTime);
-
-        leftSpikesToMove.transform.position = Vector3.MoveTowards(leftSpikesToMove.transform.position,
-            new Vector3(leftSpikesDual.position.x, leftSpikesToMove.transform.position.y, leftSpikesToMove.transform.position.z), 1.5f * Time.deltaTime);
+        exitInterface.SetActive(false);
+        menuInterface.SetActive(true);
     }
-
-    void SpikesColor()
+    public void ExitQuestion()
     {
-        if (colorIntSpikes < colorSpikeList.Length)
-        {
-            for (int i = 0; i < up_DownSpikes.Length; i++)
-                up_DownSpikes[i].GetComponent<SpriteRenderer>().color = colorSpikeList[(colorIntSpikes)];
-            for (int j = 0; j < LeftSpikes.Length; j++)
-                LeftSpikes[j].GetComponent<SpriteRenderer>().color = colorSpikeList[(colorIntSpikes)];
-            for (int l = 0; l < RightSpikes.Length; l++)
-                RightSpikes[l].GetComponent<SpriteRenderer>().color = colorSpikeList[(colorIntSpikes)];
-            colorIntSpikes++;
-        }
-        else 
-            colorIntSpikes = 0;
+        exitInterface.SetActive(true);
+        menuInterface.SetActive(false);
     }
-
-    void ChanceBallSprite()
-    {
-        if (ballNumber < ballSprites.Length)
-        {
-            ballNumber++;
-            ball.GetComponent<SpriteRenderer>().sprite = ballSprites[ballNumber];
-        }
-        else
-            ballNumber = 0;
-    }
-
-    void UpgradeParticlesBall()
-    {
-        particlesColorInt++;
-
-        if (numberParticles <= 100)
-            numberParticles += 10;
-        emissionModule.rateOverTime = numberParticles;
-        colorOverLifetimeModule.color = colorParticlesList[particlesColorInt];
-
-        if (particlesColorInt == colorParticlesList.Length)
-            particlesColorInt = 0;
-    }
-
-    void ChanceQuadMaterial()
-    {
-        if (colorInt < colorList.Length - 1)
-        {
-            colorInt++;
-            quad.GetComponent<SpriteRenderer>().material.color = colorList[colorInt];
-        }
-        else
-            colorInt = 0;
-    }
-
+    
     public void BallSound()
     {
         gameObject.GetComponent<AudioSource>().PlayOneShot(ballSound);
     }
-
     public void WallHitSound()
     {
         gameObject.GetComponent<AudioSource>().PlayOneShot(wallSound);
     }
-
     public void LoseHitSound()
     {
         gameObject.GetComponent<AudioSource>().PlayOneShot(loseSound);
     }
-
     public void SongsChange()
     {
         if (audioSource.isPlaying == false)
@@ -414,23 +420,21 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         LoadScore();
-        counter.gameObject.SetActive(false);
-        tapText.gameObject.SetActive(false);
+        gameInterface.gameObject.SetActive(false);
         buttonPause.gameObject.SetActive(false);
-        pauseObject.SetActive(false);
-        counterImage.gameObject.SetActive(false);
-        buttonBegin.gameObject.SetActive(true);
+        pauseInterface.SetActive(false);
+        menuInterface.gameObject.SetActive(true);
         ExitButton.gameObject.SetActive(true);
         buttonRestart.gameObject.SetActive(false);
     }
 
     void Update()
     {
+        constantRandomLeftSpikesInt = Random.Range(0 + adittionForScore, LeftSpikes.Length - 5 + adittionForScore);
+        constantRandomRightSpikesInt = Random.Range(0 + adittionForScore, RightSpikes.Length - 5 + adittionForScore);
         SongsChange();
         LoseGame();
-        constantRandomRightSpikesInt = Random.Range(0 + adittionForScore, RightSpikes.Length - 5 + adittionForScore);
-        constantRandomLeftSpikesInt = Random.Range(0 + adittionForScore, LeftSpikes.Length - 5 + adittionForScore);
-        UnlockBallAdorns();
         MovingSpikes();
+        UnlockBallAdorns();
     }
 }
