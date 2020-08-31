@@ -23,10 +23,10 @@ public class SpikeScript : MonoBehaviour
     {
         uIManagerReference.GetComponent<UIScript>().GetLoseState(_youLose); 
     }
-    public bool GetActiveGameType() 
-    {
-        return buttonManagerReference.GetComponent<ButtonsScript>().SetActiveGameType();
-    }
+    //public bool GetActiveGameType() 
+    //{
+    //    return buttonManagerReference.GetComponent<ButtonsScript>().SetActiveGameType();
+    //}
 
     private void MovingSpikes()
     {

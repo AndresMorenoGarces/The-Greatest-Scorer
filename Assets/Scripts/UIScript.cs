@@ -4,8 +4,7 @@ using TMPro;
 public class UIScript : MonoBehaviour
 {
     public TextMeshPro counterText;
-    public TextMeshPro lastScoreText;
-    public TextMeshPro bestScoreText;
+    
     private GameObject buttonManagerReference;
     private int score = 0;
     private bool youLose = false;
@@ -50,17 +49,9 @@ public class UIScript : MonoBehaviour
         else
             counterText.text = "Again \n" + score;
     }
-    public void LoadScore()
-    {
-        lastScoreText.text = "Last Score:\n" + PlayerPrefs.GetInt("Last_Score");
-        bestScoreText.text = "Best Score:\n" + PlayerPrefs.GetInt("Best_Score");
-    }
+    
 
-    public void LoadHardcoreScore()
-    {
-        lastScoreText.text = "Hardcore Last:\n" + PlayerPrefs.GetInt("Hardcore_Last_Score");
-        bestScoreText.text = "Hardcore Best:\n" + PlayerPrefs.GetInt("Hardcore_Best_Score");
-    }
+    
     private void UpdateScore()
     {
         counterText.text = "" + GetScore();
@@ -70,10 +61,7 @@ public class UIScript : MonoBehaviour
     {
         buttonManagerReference = GameObject.Find("ButtonManager_Container");
     }
-    private void Start()
-    {
-        LoadScore();
-    }
+
     private void Update()
     {
         if (youLose != true)
