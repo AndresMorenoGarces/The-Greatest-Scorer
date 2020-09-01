@@ -3,7 +3,6 @@
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    public Color[] colorList;
 
     public GameObject ballObjectReference;
     private GameObject wallPaper;
@@ -55,55 +54,12 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("Hardcore_Best_Score", bestScore);
         }
     }
-    public void ArcadeGame()
-    {
-        TypeOfGame(1.15f, 1);
-    }
     public void HardcoreGame()
     {
-        TypeOfGame(2.15f, 4);
+        //TypeOfGame(2.15f, 4);
     }
-    private void TypeOfGame(float timeScale, int adittion)
-    {
-        Time.timeScale = timeScale;
-        levelUp = adittion;
-    }
-    private void FunctionsActivator()
-    {
-        if (scorePoint % 5 == 0 && scorePoint != 0)
-        {
-            if (oneTime)
-            {
-                oneTime = false;
-                if (scorePoint % 10 == 0)
-                {
-                    ballObjectReference.GetComponent<BallScript>().ChangeBallSprite();
-                    ballObjectReference.GetComponent<BallScript>().UpgradeParticlesBall();
-                    if (levelUp < 5)
-                        levelUp++;
-                }
-                ChanceQuadMaterial();
-                SpikeObjectReference.GetComponent<SpikeScript>().SpikesColor();
-                if (gameVelocity <= 1f)
-                {
-                    currentTimeScale = Time.timeScale + gameVelocity;
-                    Time.timeScale = currentTimeScale;
-                }
-            }
-        }
-        else
-            oneTime = true;
-    }
-    private void ChanceQuadMaterial()
-    {
-        if (colorInt < colorList.Length - 1)
-        {
-            colorInt++;
-            wallPaper.GetComponent<SpriteRenderer>().material.color = colorList[colorInt];
-        }
-        else
-            colorInt = 0;
-    }
+    
+    
 
     private void Awake()
     {
@@ -113,11 +69,6 @@ public class GameManager : MonoBehaviour
             Destroy(this.gameObject);
         wallPaper = GameObject.Find("WallPaper");
         SpikeObjectReference = GameObject.Find("SpikeManager_Container");
-        ballObjectReference = GameObject.Find("BallObject_Container");
-    }
-    private void Update()
-    {
-        FunctionsActivator();
         ballObjectReference = GameObject.Find("BallObject_Container");
     }
 }
